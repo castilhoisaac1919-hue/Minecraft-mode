@@ -244,9 +244,7 @@ local STRIP_CLASSES = {
 	"Tool",
 }
 
--- Beta Developer Options
 local BLOCK_BODIES_ENABLED = false
--- Beta Developer Options
 
 local TOTAL_SLOTS = CONFIG.HotbarSlots + CONFIG.ExtraSlots
 
@@ -1306,6 +1304,36 @@ do
 		return result and result.Position.Y or origin.Y
 	end
 
+	local function disableCollision(character)
+		local parts = {}
+		for _, descendant in character:GetDescendants() do
+			if descendant:IsA("BasePart") and not descendant:FindFirstAncestorOfClass("Tool") then
+				table.insert(parts, descendant)
+			end
+		end
+		local function apply()
+			for _, part in parts do
+				if part.Parent then
+					if part.CanCollide then
+						part.CanCollide = false
+					end
+					if part.CanQuery then
+						part.CanQuery = false
+					end
+				end
+			end
+		end
+		apply()
+		local connection
+		connection = RunService.Heartbeat:Connect(function()
+			if not character.Parent then
+				connection:Disconnect()
+				return
+			end
+			apply()
+		end)
+	end
+
 	local function hideOriginal(character)
 		local humanoid = character:FindFirstChildOfClass("Humanoid")
 		if humanoid then
@@ -1320,6 +1348,7 @@ do
 				descendant.Enabled = false
 			end
 		end
+		disableCollision(character)
 	end
 
 	local function createCorpse(character)
@@ -1360,8 +1389,21 @@ do
 		end
 
 		for _, descendant in corpse:GetDescendants() do
-			if not descendant:IsA("Attachment") and shouldStrip(descendant) then
+			if not descendant:IsA("Attachment") and not descendant:IsA("Humanoid") and shouldStrip(descendant) then
 				descendant:Destroy()
+			end
+		end
+
+		for _, descendant in corpse:GetDescendants() do
+			if descendant:IsA("Humanoid") then
+				descendant.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+				descendant.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
+				descendant.BreakJointsOnDeath = false
+				descendant.RequiresNeck = false
+				descendant.AutoRotate = false
+				pcall(function()
+					descendant.EvaluateStateMachine = false
+				end)
 			end
 		end
 
@@ -1373,7 +1415,9 @@ do
 				local id = copy:GetAttribute("CorpseId")
 				copy:SetAttribute("CorpseId", nil)
 				copy.Anchored = true
-				copy.CanCollide = false
+				copy.CanCollide = copy.Transparency < 1
+					and copy.Name ~= "HumanoidRootPart"
+					and not copy:FindFirstAncestorOfClass("Accessory")
 				copy.CanQuery = false
 				copy.CanTouch = false
 				copy.Massless = true
