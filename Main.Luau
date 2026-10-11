@@ -37,19 +37,6 @@ local IDLE_ANIMATIONS = {
 	[Enum.HumanoidRigType.R15] = "rbxassetid://507766666",
 }
 
-local XP = {
-	Height = 8,
-	Margin = 3,
-	LevelGap = 1,
-	LevelTextSize = 16,
-	LevelAttribute = "ExperienceLevel",
-	ProgressAttribute = "ExperienceProgress",
-	Track = Color3.fromRGB(70, 70, 70),
-	Fill = Color3.fromRGB(128, 255, 32),
-	FillShade = Color3.fromRGB(74, 168, 24),
-	Level = Color3.fromRGB(128, 255, 32),
-}
-
 local CONFIG = {
 	HotbarSlots = 10,
 	ExtraSlots = 30,
@@ -62,7 +49,7 @@ local CONFIG = {
 	MaxHearts = 100,
 	HealthPerHeart = 10,
 	BottomMargin = 8,
-	HeartsMargin = XP.Margin + XP.Height + XP.LevelGap + XP.LevelTextSize + 2,
+	HeartsMargin = 8,
 	WindowMargin = 6,
 	WindowPadding = 10,
 	WindowGap = 24,
@@ -594,7 +581,7 @@ do
 	local function getPoseParts(character)
 		local entry = poseLists[character]
 		local now = os.clock()
-		if not entry or now - entry.Time > 1 then
+		if not entry or now - entry.Time > 0.5 then
 			local parts = {}
 			for _, descendant in character:GetDescendants() do
 				if descendant:IsA("BasePart") and not descendant:FindFirstAncestorOfClass("Tool") then
@@ -1329,11 +1316,14 @@ do
 			return nil
 		end
 
+		local blocky = corpse:FindFirstChild(Systems.Body.ModelName, true) ~= nil
+
 		for _, descendant in corpse:GetDescendants() do
 			if descendant:IsA("SurfaceGui") then
 				descendant.Enabled = true
 			elseif
-				(descendant:IsA("BasePart") or descendant:IsA("Decal"))
+				blocky
+				and (descendant:IsA("BasePart") or descendant:IsA("Decal"))
 				and not descendant:FindFirstAncestor(Systems.Body.ModelName)
 			then
 				descendant.Transparency = 1
@@ -1341,22 +1331,8 @@ do
 		end
 
 		for _, descendant in corpse:GetDescendants() do
-			if not descendant:IsA("Humanoid") and not descendant:IsA("Attachment") and shouldStrip(descendant) then
+			if not descendant:IsA("Attachment") and shouldStrip(descendant) then
 				descendant:Destroy()
-			end
-		end
-
-		local corpseHumanoid = corpse:FindFirstChildOfClass("Humanoid")
-		if corpseHumanoid then
-			corpseHumanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
-			corpseHumanoid.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
-			corpseHumanoid.BreakJointsOnDeath = false
-			corpseHumanoid.RequiresNeck = false
-			corpseHumanoid.EvaluateStateMachine = false
-			corpseHumanoid.Health = math.max(corpseHumanoid.MaxHealth, 1)
-			local animator = corpseHumanoid:FindFirstChildOfClass("Animator")
-			if animator then
-				animator:Destroy()
 			end
 		end
 
@@ -1371,6 +1347,7 @@ do
 				copy.CanCollide = false
 				copy.CanQuery = false
 				copy.CanTouch = false
+				copy.Massless = true
 				local original = id and originals[id]
 				if original then
 					copy.CFrame = snapshot and snapshot[original] or original.CFrame
@@ -1596,7 +1573,6 @@ local heldCamera = create("Camera", { FieldOfView = HELD.FieldOfView, Parent = h
 heldViewport.CurrentCamera = heldCamera
 
 local hotbarWidth = (CONFIG.HotbarSlots + 1) * CONFIG.SlotSize + CONFIG.HotbarSlots * CONFIG.SlotGap
-local slotsRowWidth = CONFIG.HotbarSlots * CONFIG.SlotSize + (CONFIG.HotbarSlots - 1) * CONFIG.SlotGap
 
 local holder = create("Frame", {
 	Name = "Holder",
@@ -1643,63 +1619,6 @@ create("UIListLayout", {
 	SortOrder = Enum.SortOrder.LayoutOrder,
 	Padding = UDim.new(0, CONFIG.SlotGap),
 	Parent = hotbar,
-})
-
-local xpFill
-
-do
-	local xpBar = create("Frame", {
-		Name = "ExperienceBar",
-		AnchorPoint = Vector2.new(0, 1),
-		Position = UDim2.new(0, 0, 0, -XP.Margin),
-		Size = UDim2.fromOffset(slotsRowWidth, XP.Height),
-		BackgroundColor3 = XP.Track,
-		BorderSizePixel = 0,
-		Parent = holder,
-	})
-
-	create("UIStroke", {
-		Color = COLORS.SlotBorder,
-		Thickness = 2,
-		ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-		Parent = xpBar,
-	})
-
-	xpFill = create("Frame", {
-		Name = "Fill",
-		Size = UDim2.fromScale(0, 1),
-		BackgroundColor3 = XP.Fill,
-		BorderSizePixel = 0,
-		Visible = false,
-		Parent = xpBar,
-	})
-
-	create("Frame", {
-		Name = "FillShade",
-		AnchorPoint = Vector2.new(0, 1),
-		Position = UDim2.fromScale(0, 1),
-		Size = UDim2.fromScale(1, 0.4),
-		BackgroundColor3 = XP.FillShade,
-		BorderSizePixel = 0,
-		Parent = xpFill,
-	})
-end
-
-local xpLevel = create("TextLabel", {
-	Name = "ExperienceLevel",
-	AnchorPoint = Vector2.new(0.5, 1),
-	Position = UDim2.new(0, slotsRowWidth / 2, 0, -(XP.Margin + XP.Height + XP.LevelGap)),
-	Size = UDim2.fromOffset(100, XP.LevelTextSize + 2),
-	BackgroundTransparency = 1,
-	Text = "0",
-	TextColor3 = XP.Level,
-	TextSize = XP.LevelTextSize,
-	TextStrokeColor3 = COLORS.SlotBorder,
-	TextStrokeTransparency = 0,
-	Font = FONT,
-	Visible = false,
-	ZIndex = 5,
-	Parent = holder,
 })
 
 local heartStep = CONFIG.HeartSize + CONFIG.HeartGap
@@ -1859,69 +1778,6 @@ do
 			CONFIG.WindowPadding + CONFIG.PreviewHeight - CONFIG.SlotSize
 		)
 	)
-
-	local craftBlock = CONFIG.SlotSize * 2 + CONFIG.SlotGap
-	local resultX = windowWidth - CONFIG.WindowPadding - CONFIG.SlotSize - 20
-	local arrowX = resultX - 34
-	local craftGridX = arrowX - 12 - craftBlock
-	local craftTop = CONFIG.WindowPadding + 22
-
-	create("TextLabel", {
-		Name = "CraftingTitle",
-		Position = UDim2.fromOffset(craftGridX, CONFIG.WindowPadding),
-		Size = UDim2.fromOffset(120, 16),
-		BackgroundTransparency = 1,
-		Text = "Crafting",
-		TextColor3 = COLORS.PanelText,
-		TextSize = 14,
-		Font = FONT,
-		TextXAlignment = Enum.TextXAlignment.Left,
-		ZIndex = 10,
-		Parent = window,
-	})
-
-	for row = 0, 1 do
-		for column = 0, 1 do
-			createDecorSlot(
-				"CraftInput" .. (row * 2 + column + 1),
-				UDim2.fromOffset(
-					craftGridX + column * (CONFIG.SlotSize + CONFIG.SlotGap),
-					craftTop + row * (CONFIG.SlotSize + CONFIG.SlotGap)
-				)
-			)
-		end
-	end
-
-	createDecorSlot(
-		"CraftResult",
-		UDim2.fromOffset(resultX, craftTop + (craftBlock - CONFIG.SlotSize) / 2)
-	)
-
-	local craftArrow = create("Frame", {
-		Name = "CraftArrow",
-		Position = UDim2.fromOffset(arrowX, craftTop + (craftBlock - 20) / 2),
-		Size = UDim2.fromOffset(28, 20),
-		BackgroundTransparency = 1,
-		ZIndex = 10,
-		Parent = window,
-	})
-
-	for _, piece in {
-		{ Vector2.new(0, 8), Vector2.new(16, 4) },
-		{ Vector2.new(16, 4), Vector2.new(4, 12) },
-		{ Vector2.new(20, 6), Vector2.new(4, 8) },
-		{ Vector2.new(24, 8), Vector2.new(4, 4) },
-	} do
-		create("Frame", {
-			Name = "ArrowPiece",
-			Position = UDim2.fromOffset(piece[1].X, piece[1].Y),
-			Size = UDim2.fromOffset(piece[2].X, piece[2].Y),
-			BackgroundColor3 = COLORS.SlotFill,
-			BorderSizePixel = 0,
-			ZIndex = 10,
-			Parent = craftArrow,
-		})
-	end
 end
 
 local grid = create("Frame", {
@@ -2520,17 +2376,6 @@ local function renderHud()
 	local rows = renderHearts()
 	renderShields()
 	updateHudLayout(rows)
-end
-
-local function renderExperience()
-	local level = player:GetAttribute(XP.LevelAttribute)
-	local progress = player:GetAttribute(XP.ProgressAttribute)
-	level = type(level) == "number" and math.max(math.floor(level), 0) or 0
-	progress = type(progress) == "number" and math.clamp(progress, 0, 1) or 0
-	xpFill.Size = UDim2.fromScale(progress, 1)
-	xpFill.Visible = progress > 0
-	xpLevel.Text = tostring(level)
-	xpLevel.Visible = level > 0
 end
 
 local function renderSlots()
@@ -3167,23 +3012,23 @@ local function setupCharacter(targetPlayer, character)
 	Systems.Body.Live[character] = humanoid
 	Systems.Body.capturePose(character)
 
-	character.ChildAdded:Connect(function(child)
-		if Systems.Body.isRelevant(child) then
-			Systems.Body.scheduleRefresh(character)
-		end
-	end)
-	character.ChildRemoved:Connect(function(child)
-		if Systems.Body.isRelevant(child) then
-			Systems.Body.scheduleRefresh(character)
-		end
-	end)
-	Systems.Body.scheduleRefresh(character)
-
 	humanoid.Died:Once(function()
 		task.spawn(Systems.Death.play, character)
 	end)
 
 	if targetPlayer == player then
+		character.ChildAdded:Connect(function(child)
+			if Systems.Body.isRelevant(child) then
+				Systems.Body.scheduleRefresh(character)
+			end
+		end)
+		character.ChildRemoved:Connect(function(child)
+			if Systems.Body.isRelevant(child) then
+				Systems.Body.scheduleRefresh(character)
+			end
+		end)
+		Systems.Body.scheduleRefresh(character)
+
 		watchContainer(character)
 		bindHumanoid(humanoid)
 		scheduleSync()
@@ -3245,9 +3090,6 @@ player.ChildAdded:Connect(function(child)
 	end
 end)
 
-player:GetAttributeChangedSignal(XP.LevelAttribute):Connect(renderExperience)
-player:GetAttributeChangedSignal(XP.ProgressAttribute):Connect(renderExperience)
-
 screenGui:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateScale)
 UserInputService:GetPropertyChangedSignal("KeyboardEnabled"):Connect(updateScale)
 UserInputService:GetPropertyChangedSignal("TouchEnabled"):Connect(updateScale)
@@ -3268,7 +3110,6 @@ end
 
 updateScale()
 renderHud()
-renderExperience()
 scheduleSync()
 
 for _, otherPlayer in Players:GetPlayers() do
