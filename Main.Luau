@@ -19,19 +19,6 @@ local HEART_IMAGES = {
 	Empty = "rbxassetid://72490262317198",
 }
 
-local DAMAGE_SOUND = {
-	SoundId = "rbxassetid://139459336979009",
-	Volume = 0.3,
-	MinDistance = 10,
-	MaxDistance = 50,
-}
-
-local DAMAGE_HIGHLIGHT = {
-	Color = Color3.fromRGB(255, 0, 0),
-	FillTransparency = 0.4,
-	Duration = 0.15,
-}
-
 local IDLE_ANIMATIONS = {
 	[Enum.HumanoidRigType.R6] = "rbxassetid://180435571",
 	[Enum.HumanoidRigType.R15] = "rbxassetid://507766666",
@@ -63,43 +50,6 @@ local STYLE = {
 	HotbarFillTransparency = 0.35,
 }
 
-local SHIELD = {
-	Image = "rbxassetid://133213905902110",
-	Attribute = "Shield",
-	PerIcon = 10,
-	MaxIcons = 10,
-	Gap = 2,
-}
-
-local SHAKE = {
-	LostThreshold = 0.8,
-	Amplitude = 2,
-	Interval = 0.05,
-}
-
-local RECOVERY = {
-	Window = 1,
-	FastRate = 0.05,
-	Duration = 2,
-	JumpHeight = 3,
-	IdleSteps = 5,
-	SoundGrace = 0.25,
-}
-
-local DRAG = {
-	HoldTime = 0.25,
-	GhostTransparency = 0.1,
-	GhostZIndex = 100,
-	DimTransparency = 0.6,
-}
-
-local POPUP = {
-	Hold = 1.6,
-	Fade = 0.4,
-	Gap = 8,
-	TextSize = 14,
-}
-
 local TOOLTIP = {
 	Offset = Vector2.new(14, -6),
 	Padding = 6,
@@ -115,70 +65,6 @@ local TOOLTIP = {
 local SHADOW = {
 	Color = Color3.fromRGB(56, 56, 56),
 	Offset = 2,
-}
-
-local CROSSHAIR = {
-	Size = 18,
-	Thickness = 2,
-}
-
-local HURT = {
-	Roll = 7,
-	Duration = 0.4,
-}
-
-local HELD = {
-	ScreenFraction = 0.42,
-	MinSize = 140,
-	MaxSize = 360,
-	Margin = 1.15,
-	FieldOfView = 30,
-	BuildDelay = 0.12,
-	EquipTime = 0.3,
-	EquipDrop = 1.8,
-	SwingTime = 0.3,
-	SwingPitch = 55,
-	SwingYaw = 18,
-	BobX = 0.1,
-	BobY = 0.12,
-	SwayDegrees = 5,
-	StepRate = 0.55,
-	WalkSpeedReference = 16,
-	BlendSpeed = 8,
-	BaseRotation = Vector3.new(-8, -50, 0),
-}
-
-local DEATH = {
-	TipDuration = 0.45,
-	GroundWait = 1.35,
-	TipSide = 1,
-	Gravity = 196.2,
-	TipDegrees = 90,
-	PixelCount = 180,
-	PixelMinSize = 0.6,
-	PixelMaxSize = 1.4,
-	PixelRiseMin = 4,
-	PixelRiseMax = 10,
-	PixelLifeMin = 0.9,
-	PixelLifeMax = 1.8,
-	PixelDrift = 3,
-	PixelSpread = 1.25,
-	ScreenTransparency = 0.45,
-	ScreenFade = 0.4,
-	PixelColors = {
-		Color3.fromRGB(255, 255, 255),
-		Color3.fromRGB(235, 235, 235),
-		Color3.fromRGB(205, 205, 205),
-		Color3.fromRGB(175, 175, 175),
-		Color3.fromRGB(145, 145, 145),
-	},
-}
-
-local SCALE = {
-	Min = 0.45,
-	TouchHotbarWidth = 0.5,
-	DesktopHotbarWidth = 0.9,
-	HotbarHeight = 0.12,
 }
 
 local COLORS = {
@@ -244,7 +130,236 @@ local STRIP_CLASSES = {
 	"Tool",
 }
 
-local BLOCK_BODIES_ENABLED = false
+-- Developer Settings
+-- WARNING! Changing these settings may cause developers to break some aspects of the interface.
+local DEV = {
+	BlockBodies = false,
+
+	Interface = {
+		HideDefaultBackpack = true,
+		HideDefaultHealthBar = true,
+		HideDefaultOverheadHealth = true,
+		RemoveOtherInventoryGuis = true,
+		RemoveOtherBodyBillboards = true,
+	},
+
+	Mobile = {
+		UseThreeSlots = false,
+		ThreeSlotCount = 3,
+	},
+
+	Inventory = {
+		ButtonOnlyOnMobile = false,
+		KeyEnabled = false,
+		Key = Enum.KeyCode.E,
+		PlayerPreview = true,
+	},
+
+	Hotbar = {
+		NumberKeys = true,
+		ShowKeyLabels = false,
+		DragToSwap = true,
+		Tooltip = true,
+		ItemNamePopup = {
+			Enabled = true,
+			Hold = 1.6,
+			Fade = 0.4,
+			Gap = 8,
+			TextSize = 14,
+		},
+		Drag = {
+			HoldTime = 0.25,
+			GhostTransparency = 0.1,
+			GhostZIndex = 100,
+			DimTransparency = 0.6,
+		},
+	},
+
+	Hearts = {
+		Enabled = true,
+		LowHealthShake = true,
+		HealingWave = true,
+		ShieldBar = true,
+		Shake = {
+			LostThreshold = 0.8,
+			Amplitude = 2,
+			Interval = 0.05,
+		},
+		Recovery = {
+			Window = 1,
+			FastRate = 0.05,
+			Duration = 2,
+			JumpHeight = 3,
+			IdleSteps = 5,
+			SoundGrace = 0.25,
+		},
+	},
+
+	Shield = {
+		Image = "rbxassetid://133213905902110",
+		Attribute = "Shield",
+		PerIcon = 10,
+		MaxIcons = 10,
+		Gap = 2,
+		ForceFieldFillsBar = true,
+	},
+
+	Overhead = {
+		Enabled = true,
+		ShowShields = true,
+		LowHealthShake = true,
+		Distance = 50,
+		FadeRange = 10,
+		ShakeAmplitude = 1,
+		Height = 2.2,
+	},
+
+	Damage = {
+		Sound = true,
+		Highlight = true,
+		CameraTilt = true,
+		IgnoreWhileRecovering = true,
+		SoundSettings = {
+			SoundId = "rbxassetid://139459336979009",
+			Volume = 0.5,
+			MinDistance = 10,
+			MaxDistance = 50,
+		},
+		HighlightSettings = {
+			Color = Color3.fromRGB(255, 0, 0),
+			FillTransparency = 0.4,
+			Duration = 0.15,
+		},
+		TiltSettings = {
+			Roll = 7,
+			Duration = 0.4,
+		},
+	},
+
+	Crosshair = {
+		Enabled = true,
+		ShowInThirdPerson = false,
+		Size = 18,
+		Thickness = 0,
+	},
+
+	HeldItem = {
+		Enabled = true,
+		Style = "Hand",
+		HideWorldTool = true,
+		ShowInThirdPerson = false,
+		ScreenFraction = 0.42,
+		MinSize = 140,
+		MaxSize = 560,
+		Margin = 1.15,
+		FieldOfView = 30,
+		BuildDelay = 0.12,
+		EquipTime = 0.3,
+		EquipDrop = 1.8,
+		SwingTime = 0.3,
+		SwingPitch = 55,
+		SwingYaw = 18,
+		BobX = 0.1,
+		BobY = 0.12,
+		SwayDegrees = 5,
+		StepRate = 0.55,
+		WalkSpeedReference = 16,
+		BlendSpeed = 8,
+		BaseRotation = Vector3.new(-8, -50, 0),
+	},
+
+	Hand = {
+		Enabled = true,
+		RightHand = true,
+		LeftHand = false,
+		BothHands = false,
+		ShowInFirstPerson = true,
+		ShowInThirdPerson = false,
+		HideOnMobile = false,
+		HideWorldArms = true,
+		UseSkinColor = true,
+		FallbackColor = Color3.fromRGB(234, 184, 146),
+		SleeveEnabled = false,
+		SleeveColor = Color3.fromRGB(0, 170, 170),
+		SleevePixels = 4,
+		FieldOfView = 70,
+		Pixel = 0.075,
+		RightPosition = Vector3.new(0.85, -0.95, -0.9),
+		LeftPosition = Vector3.new(-0.85, -0.95, -0.9),
+		RightRotation = Vector3.new(115, 20, 0),
+		LeftRotation = Vector3.new(115, -20, 0),
+		ItemScale = 1,
+		ItemMaxReach = 1.1,
+		BuildDelay = 0.12,
+		WalkBob = true,
+		IdleSway = true,
+		IdleSwayAmount = 0.012,
+		EquipAnimation = true,
+		EquipTime = 0.3,
+		EquipDrop = 1.2,
+		Swing = true,
+		SwingOnEmptyClick = true,
+		SwingTime = 0.3,
+		SwingPitch = 40,
+		SwingShift = Vector3.new(0.15, 0.1, 0.4),
+		BobX = 0.06,
+		BobY = 0.07,
+		SwayDegrees = 4,
+		StepRate = 0.55,
+		WalkSpeedReference = 16,
+		BlendSpeed = 8,
+	},
+
+	Death = {
+		Effect = true,
+		Screen = true,
+		HideScreenAfterNoRespawn = true,
+		HideScreenAfterSeconds = 5.5,
+		TipDuration = 0.45,
+		GroundWait = 1.25,
+		TipSide = 1,
+		Gravity = 196.2,
+		TipDegrees = 90,
+		PixelCount = 180,
+		PixelMinSize = 0.6,
+		PixelMaxSize = 1.4,
+		PixelRiseMin = 4,
+		PixelRiseMax = 10,
+		PixelLifeMin = 0.9,
+		PixelLifeMax = 1.8,
+		PixelDrift = 3,
+		PixelSpread = 1.25,
+		ScreenTransparency = 0.45,
+		ScreenFade = 0.4,
+		PixelColors = {
+			Color3.fromRGB(255, 255, 255),
+			Color3.fromRGB(235, 235, 235),
+			Color3.fromRGB(205, 205, 205),
+			Color3.fromRGB(175, 175, 175),
+			Color3.fromRGB(145, 145, 145),
+		},
+	},
+
+	Scale = {
+		Min = 0.45,
+		TouchHotbarWidth = 0.5,
+		DesktopHotbarWidth = 0.9,
+		HotbarHeight = 0.12,
+	},
+}
+
+local SHIELD = DEV.Shield
+local SHAKE = DEV.Hearts.Shake
+local RECOVERY = DEV.Hearts.Recovery
+local DRAG = DEV.Hotbar.Drag
+local POPUP = DEV.Hotbar.ItemNamePopup
+local CROSSHAIR = DEV.Crosshair
+local HURT = DEV.Damage.TiltSettings
+local DAMAGE_SOUND = DEV.Damage.SoundSettings
+local DAMAGE_HIGHLIGHT = DEV.Damage.HighlightSettings
+local HELD = DEV.HeldItem
+local DEATH = DEV.Death
+local SCALE = DEV.Scale
 
 local TOTAL_SLOTS = CONFIG.HotbarSlots + CONFIG.ExtraSlots
 
@@ -276,12 +391,16 @@ local hurtSign = 1
 local itemNameToken = 0
 local itemNameTween = nil
 local deathScreenTween = nil
+local deathScreenToken = 0
 local hoveredSlot = nil
 local respawnToken = 0
 local dragSuppressUntil = 0
 local Systems = {}
 
 local function checkAndRemoveTargetGui(instance)
+	if not DEV.Interface.RemoveOtherInventoryGuis then
+		return
+	end
 	if screenGui and (instance == screenGui or instance:IsDescendantOf(screenGui)) then
 		return
 	end
@@ -294,6 +413,9 @@ local function checkAndRemoveTargetGui(instance)
 end
 
 local function setupTargetGuiListener(instance)
+	if not DEV.Interface.RemoveOtherInventoryGuis then
+		return
+	end
 	checkAndRemoveTargetGui(instance)
 	if (instance:IsA("GuiObject") or instance:IsA("LayerCollector")) and not (screenGui and instance:IsDescendantOf(screenGui)) then
 		instance:GetPropertyChangedSignal("Name"):Connect(function()
@@ -303,6 +425,9 @@ local function setupTargetGuiListener(instance)
 end
 
 local function checkAndRemoveBillboard(instance)
+	if not DEV.Interface.RemoveOtherBodyBillboards then
+		return
+	end
 	if instance:IsA("BillboardGui") and instance.Name ~= "OverheadHearts" then
 		local parent = instance.Parent
 		local adornee = instance.Adornee
@@ -317,7 +442,7 @@ end
 Workspace.DescendantAdded:Connect(function(descendant)
 	checkAndRemoveBillboard(descendant)
 	setupTargetGuiListener(descendant)
-	if descendant:IsA("BillboardGui") then
+	if DEV.Interface.RemoveOtherBodyBillboards and descendant:IsA("BillboardGui") then
 		descendant:GetPropertyChangedSignal("Adornee"):Connect(function()
 			checkAndRemoveBillboard(descendant)
 		end)
@@ -332,15 +457,17 @@ for _, descendant in Workspace:GetDescendants() do
 	checkAndRemoveTargetGui(descendant)
 end
 
+local function applyCoreGuiSettings()
+	if DEV.Interface.HideDefaultBackpack and StarterGui:GetCoreGuiEnabled(Enum.CoreGuiType.Backpack) then
+		StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
+	end
+	if DEV.Interface.HideDefaultHealthBar and StarterGui:GetCoreGuiEnabled(Enum.CoreGuiType.Health) then
+		StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Health, false)
+	end
+end
+
 RunService.RenderStepped:Connect(function()
-	pcall(function()
-		if StarterGui:GetCoreGuiEnabled(Enum.CoreGuiType.Backpack) then
-			StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
-		end
-		if StarterGui:GetCoreGuiEnabled(Enum.CoreGuiType.Health) then
-			StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Health, false)
-		end
-	end)
+	pcall(applyCoreGuiSettings)
 end)
 
 local function create(className, properties)
@@ -425,6 +552,34 @@ local function shouldStrip(instance)
 	return false
 end
 
+local function cloneToolModel(tool, reference, parent)
+	local model = create("Model", { Name = "ToolModel", Parent = parent })
+	local referenceCFrame = reference.CFrame
+	for _, descendant in tool:GetDescendants() do
+		if descendant:IsA("BasePart") then
+			local copy = descendant:Clone()
+			if copy then
+				for _, child in copy:GetDescendants() do
+					if shouldStrip(child) then
+						child:Destroy()
+					end
+				end
+				copy.Anchored = true
+				copy.CanCollide = false
+				copy.CanQuery = false
+				copy.CanTouch = false
+				copy.CFrame = referenceCFrame:ToObjectSpace(descendant.CFrame)
+				copy.Parent = model
+			end
+		end
+	end
+	if #model:GetChildren() == 0 then
+		model:Destroy()
+		return nil
+	end
+	return model
+end
+
 local function getHeartCounts(humanoid)
 	local healthPerHeart = CONFIG.HealthPerHeart
 	local maxHealth = humanoid and humanoid.MaxHealth or healthPerHeart * CONFIG.HeartsPerRow
@@ -445,7 +600,7 @@ end
 
 local function getShieldIcons(humanoid)
 	local character = humanoid.Parent
-	if character and character:FindFirstChildOfClass("ForceField") then
+	if DEV.Shield.ForceFieldFillsBar and character and character:FindFirstChildOfClass("ForceField") then
 		return SHIELD.MaxIcons
 	end
 	local shield = humanoid:GetAttribute(SHIELD.Attribute)
@@ -739,7 +894,7 @@ do
 			end
 		end
 
-		if not BLOCK_BODIES_ENABLED then
+		if not DEV.BlockBodies then
 			return
 		end
 
@@ -900,7 +1055,7 @@ do
 	end
 
 	local function updateBlockBodies()
-		if not BLOCK_BODIES_ENABLED then
+		if not DEV.BlockBodies then
 			return
 		end
 		local camera = Workspace.CurrentCamera
@@ -974,15 +1129,15 @@ do
 		HeartSize = 10,
 		HeartGap = 1,
 		HeartsPerRow = 10,
-		Height = 2.2,
-		Distance = 50,
-		FadeRange = 10,
+		Height = DEV.Overhead.Height,
+		Distance = DEV.Overhead.Distance,
+		FadeRange = DEV.Overhead.FadeRange,
 		FramePadding = 4,
 		FrameGap = 2,
 		FrameTransparency = 0.25,
 		FrameCorner = 3,
 		NameHeight = 14,
-		ShakeAmplitude = 1,
+		ShakeAmplitude = DEV.Overhead.ShakeAmplitude,
 		InvisibleCheckInterval = 0.25,
 		InvisibleThreshold = 0.9,
 	}
@@ -1015,7 +1170,7 @@ do
 
 	local function renderOverhead(view)
 		local totalHearts, halves = getHeartCounts(view.Humanoid)
-		local shieldCount = getShieldIcons(view.Humanoid)
+		local shieldCount = DEV.Overhead.ShowShields and getShieldIcons(view.Humanoid) or 0
 		local rows = math.max(math.ceil(totalHearts / OVERHEAD.HeartsPerRow), 1)
 		local heartsHeight = rows * overheadStep - OVERHEAD.HeartGap + OVERHEAD.FramePadding * 2
 		local shieldExtra = shieldCount > 0 and overheadShieldHeight + OVERHEAD.FrameGap or 0
@@ -1078,7 +1233,7 @@ do
 		end
 
 		local wasShaking = view.Shaking
-		view.Shaking = isLowHealth(view.Humanoid)
+		view.Shaking = DEV.Overhead.LowHealthShake and isLowHealth(view.Humanoid)
 		if wasShaking and not view.Shaking then
 			setOverheadOffsets(view, false)
 		end
@@ -1559,10 +1714,7 @@ end
 
 task.spawn(function()
 	for _ = 1, 20 do
-		local success = pcall(function()
-			StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
-			StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Health, false)
-		end)
+		local success = pcall(applyCoreGuiSettings)
 		if success then
 			return
 		end
@@ -1645,6 +1797,307 @@ local heldWorld = create("WorldModel", { Parent = heldViewport })
 local heldCamera = create("Camera", { FieldOfView = HELD.FieldOfView, Parent = heldViewport })
 heldViewport.CurrentCamera = heldCamera
 
+do
+	local H = DEV.Hand
+
+	local RIGHT_NAMES = { "RightUpperArm", "Right Arm", "RightHand" }
+	local LEFT_NAMES = { "LeftUpperArm", "Left Arm", "LeftHand" }
+	local WORLD_ARM_NAMES = {
+		Right = { "RightUpperArm", "RightLowerArm", "RightHand", "Right Arm" },
+		Left = { "LeftUpperArm", "LeftLowerArm", "LeftHand", "Left Arm" },
+	}
+
+	local viewport = create("ViewportFrame", {
+		Name = "HandViewport",
+		Size = UDim2.fromScale(1, 1),
+		BackgroundTransparency = 1,
+		Ambient = Color3.fromRGB(190, 190, 190),
+		LightColor = Color3.fromRGB(255, 255, 255),
+		LightDirection = Vector3.new(-1, -1, -1),
+		Visible = false,
+		Parent = screenGui,
+	})
+
+	local world = create("WorldModel", { Parent = viewport })
+	local camera = create("Camera", { FieldOfView = H.FieldOfView, Parent = viewport })
+	viewport.CurrentCamera = camera
+
+	local arms = {}
+	local worldArms = {}
+	local itemModel = nil
+	local itemTool = nil
+	local itemConnections = {}
+	local itemAttach = 0
+	local signature = ""
+	local nextSignatureCheck = 0
+	local swingStart = -1000
+	local equipStart = 0
+	local walkTime = 0
+	local walkIntensity = 0
+	local armLength = 12 * H.Pixel
+	local armsHidden = false
+	local holdsNow = false
+
+	local function getArmColor(character, names)
+		for _, name in names do
+			local part = character:FindFirstChild(name)
+			if part and part:IsA("BasePart") then
+				return part.Color
+			end
+		end
+		return H.FallbackColor
+	end
+
+	local function buildArm(color)
+		local pixel = H.Pixel
+		local width = 4 * pixel
+		local model = create("Model", { Name = "HandArm", Parent = world })
+		create("Part", {
+			Name = "Skin",
+			Size = Vector3.new(width, armLength, width),
+			Color = color,
+			Material = Enum.Material.SmoothPlastic,
+			Anchored = true,
+			CanCollide = false,
+			CanQuery = false,
+			CanTouch = false,
+			CastShadow = false,
+			CFrame = CFrame.new(0, -armLength / 2, 0),
+			Parent = model,
+		})
+		if H.SleeveEnabled then
+			local sleeveLength = H.SleevePixels * pixel
+			create("Part", {
+				Name = "Sleeve",
+				Size = Vector3.new(width * 1.04, sleeveLength, width * 1.04),
+				Color = H.SleeveColor,
+				Material = Enum.Material.SmoothPlastic,
+				Anchored = true,
+				CanCollide = false,
+				CanQuery = false,
+				CanTouch = false,
+				CastShadow = false,
+				CFrame = CFrame.new(0, -sleeveLength / 2, 0),
+				Parent = model,
+			})
+		end
+		model.WorldPivot = CFrame.new()
+		return model
+	end
+
+	local function collectWorldArms(character)
+		table.clear(worldArms)
+		for side, names in WORLD_ARM_NAMES do
+			local list = {}
+			for _, name in names do
+				local part = character:FindFirstChild(name)
+				if part and part:IsA("BasePart") then
+					table.insert(list, part)
+				end
+			end
+			worldArms[side] = list
+		end
+	end
+
+	local function refreshArms(character)
+		local wantRight = H.BothHands or H.RightHand
+		local wantLeft = H.BothHands or H.LeftHand
+		local rightColor = H.UseSkinColor and getArmColor(character, RIGHT_NAMES) or H.FallbackColor
+		local leftColor = H.UseSkinColor and getArmColor(character, LEFT_NAMES) or H.FallbackColor
+		local current = string.format(
+			"%s|%s|%s|%s|%s",
+			character.Name,
+			tostring(wantRight),
+			tostring(wantLeft),
+			tostring(rightColor),
+			tostring(leftColor)
+		)
+		collectWorldArms(character)
+		if current == signature then
+			return
+		end
+		signature = current
+		for side, arm in arms do
+			arm:Destroy()
+			arms[side] = nil
+		end
+		if wantRight then
+			arms.Right = buildArm(rightColor)
+		end
+		if wantLeft then
+			arms.Left = buildArm(leftColor)
+		end
+	end
+
+	local function applyWorldArms(hide)
+		for side, parts in worldArms do
+			local target = (hide and arms[side] ~= nil) and 1 or 0
+			for _, part in parts do
+				if part.Parent and part.LocalTransparencyModifier ~= target then
+					part.LocalTransparencyModifier = target
+				end
+			end
+		end
+	end
+
+	local function clearItem()
+		for _, connection in itemConnections do
+			connection:Disconnect()
+		end
+		table.clear(itemConnections)
+		if itemModel then
+			itemModel:Destroy()
+			itemModel = nil
+		end
+		itemTool = nil
+	end
+
+	local function buildItem(tool)
+		local character = player.Character
+		if not character or itemTool ~= tool or tool.Parent ~= character then
+			return
+		end
+		local reference = character:FindFirstChild("RightHand") or character:FindFirstChild("Right Arm")
+		if not reference then
+			return
+		end
+		local model = cloneToolModel(tool, reference, world)
+		if not model then
+			return
+		end
+		model.WorldPivot = CFrame.new()
+		local boxCFrame, boxSize = model:GetBoundingBox()
+		local reach = math.max(boxCFrame.Position.Magnitude + boxSize.Magnitude / 2, 0.05)
+		local scale = math.min((armLength / 2) * H.ItemScale, H.ItemMaxReach / reach)
+		pcall(function()
+			model:ScaleTo(scale)
+		end)
+		itemAttach = reference.Name == "Right Arm" and -armLength / 2 or -armLength * 0.9
+		itemModel = model
+	end
+
+	local function setTool(tool)
+		clearItem()
+		itemTool = tool
+		if not tool then
+			return
+		end
+		equipStart = os.clock()
+		table.insert(itemConnections, tool.Activated:Connect(function()
+			swingStart = os.clock()
+		end))
+		task.delay(H.BuildDelay, function()
+			buildItem(tool)
+		end)
+	end
+
+	UserInputService.InputBegan:Connect(function(input, gameProcessed)
+		if gameProcessed or not H.SwingOnEmptyClick then
+			return
+		end
+		if input.UserInputType == Enum.UserInputType.MouseButton1 and itemTool == nil then
+			swingStart = os.clock()
+		end
+	end)
+
+	local function update(deltaTime)
+		local character = player.Character
+		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+		local root = character and character:FindFirstChild("HumanoidRootPart")
+		local alive = humanoid ~= nil and root ~= nil and humanoid.Health > 0
+		local firstPerson = isFirstPerson()
+		local modeAllowed = (firstPerson and H.ShowInFirstPerson) or (not firstPerson and H.ShowInThirdPerson)
+		local allowed = H.Enabled and alive and modeAllowed and not (H.HideOnMobile and isCompactDevice())
+
+		if viewport.Visible ~= allowed then
+			viewport.Visible = allowed
+		end
+
+		if not allowed then
+			holdsNow = false
+			if armsHidden then
+				armsHidden = false
+				applyWorldArms(false)
+			end
+			return
+		end
+
+		local now = os.clock()
+
+		if now >= nextSignatureCheck then
+			nextSignatureCheck = now + 0.5
+			refreshArms(character)
+		end
+
+		local tool = (HELD.Enabled and HELD.Style == "Hand") and Systems.Held.Current() or nil
+		if tool ~= itemTool then
+			setTool(tool)
+		end
+
+		local hideArms = H.HideWorldArms and firstPerson
+		if hideArms then
+			armsHidden = true
+			applyWorldArms(true)
+		elseif armsHidden then
+			armsHidden = false
+			applyWorldArms(false)
+		end
+
+		holdsNow = itemModel ~= nil and (arms.Right ~= nil or arms.Left ~= nil)
+
+		local velocity = root.AssemblyLinearVelocity
+		local speed = Vector3.new(velocity.X, 0, velocity.Z).Magnitude
+		local grounded = humanoid.FloorMaterial ~= Enum.Material.Air
+		local target = (H.WalkBob and grounded) and math.clamp(speed / H.WalkSpeedReference, 0, 1) or 0
+		walkIntensity += (target - walkIntensity) * math.min(deltaTime * H.BlendSpeed, 1)
+		walkTime += deltaTime * speed * H.StepRate
+
+		local equip = math.clamp((now - equipStart) / H.EquipTime, 0, 1)
+		local rise = H.EquipAnimation and (1 - (1 - equip) ^ 3) or 1
+		local swing = H.Swing and math.clamp((now - swingStart) / H.SwingTime, 0, 1) or 1
+		local swingArc = swing < 1 and math.sin(swing * math.pi) or 0
+		local itemSide = arms.Right and "Right" or (arms.Left and "Left" or nil)
+		local itemFrame = nil
+
+		for side, arm in arms do
+			local isRight = side == "Right"
+			local position = isRight and H.RightPosition or H.LeftPosition
+			local rotation = isRight and H.RightRotation or H.LeftRotation
+			local phase = isRight and 0 or math.pi
+			local arc = side == itemSide and swingArc or 0
+			local bobX = math.sin(walkTime + phase) * H.BobX * walkIntensity
+			local bobY = -math.abs(math.cos(walkTime + phase)) * H.BobY * walkIntensity
+			if H.IdleSway then
+				bobY += math.sin(now * 1.6 + phase) * H.IdleSwayAmount
+			end
+			local sway = math.sin(walkTime + phase) * math.rad(H.SwayDegrees) * walkIntensity
+			local drop = -(1 - rise) * H.EquipDrop
+			local frame = CFrame.new(
+				position.X + bobX - arc * H.SwingShift.X * (isRight and 1 or -1),
+				position.Y + bobY + drop + arc * H.SwingShift.Y,
+				position.Z - arc * H.SwingShift.Z
+			)
+				* CFrame.Angles(0, math.rad(rotation.Y), 0)
+				* CFrame.Angles(math.rad(rotation.X) + arc * math.rad(H.SwingPitch), 0, math.rad(rotation.Z) + sway)
+			arm:PivotTo(frame)
+			if side == itemSide then
+				itemFrame = frame
+			end
+		end
+
+		if itemModel and itemFrame then
+			itemModel:PivotTo(itemFrame * CFrame.new(0, itemAttach, 0))
+		end
+	end
+
+	Systems.Hand = {
+		Update = update,
+		holdsItem = function()
+			return holdsNow and HELD.Enabled and HELD.Style == "Hand"
+		end,
+	}
+end
+
 local hotbarWidth = (CONFIG.HotbarSlots + 1) * CONFIG.SlotSize + CONFIG.HotbarSlots * CONFIG.SlotGap
 
 local holder = create("Frame", {
@@ -1703,6 +2156,7 @@ local heartsFrame = create("Frame", {
 	Position = UDim2.new(0, 0, 0, -CONFIG.HeartsMargin),
 	Size = UDim2.fromOffset(heartsRowWidth, CONFIG.HeartSize),
 	BackgroundTransparency = 1,
+	Visible = DEV.Hearts.Enabled,
 	Parent = holder,
 })
 
@@ -2004,7 +2458,7 @@ local tooltipLabel = create("TextLabel", {
 local function updateTooltip()
 	local tool = hoveredSlot and slotTools[hoveredSlot]
 	local dragging = press ~= nil and press.Active
-	if tool and not dragging and not isCompactDevice() then
+	if DEV.Hotbar.Tooltip and tool and not dragging and not isCompactDevice() then
 		tooltipLabel.Text = tool.Name
 		tooltipFrame.Visible = true
 	else
@@ -2106,7 +2560,7 @@ local function createSlotView(index, parent, zIndex, fillTransparency)
 			TextSize = 10,
 			Font = FONT,
 			TextXAlignment = Enum.TextXAlignment.Left,
-			Visible = false,
+			Visible = DEV.Hotbar.ShowKeyLabels,
 			ZIndex = zIndex + 1,
 			Parent = button,
 		})
@@ -2267,6 +2721,10 @@ local function buildPreview(character)
 end
 
 local function refreshPreview()
+	if not DEV.Inventory.PlayerPreview then
+		clearPreview()
+		return
+	end
 	local character = player.Character
 	if character and character:FindFirstChildOfClass("Humanoid") then
 		buildPreview(character)
@@ -2305,8 +2763,41 @@ local function updateScale()
 	heldViewport.Size = UDim2.fromOffset(heldSize, heldSize)
 end
 
+local function applyHotbarLayout()
+	local compact = isCompactDevice()
+	local visibleSlots = CONFIG.HotbarSlots
+	if compact and DEV.Mobile.UseThreeSlots then
+		visibleSlots = math.clamp(DEV.Mobile.ThreeSlotCount, 1, CONFIG.HotbarSlots)
+	end
+	local showButton = compact or not DEV.Inventory.ButtonOnlyOnMobile
+
+	for index = 1, CONFIG.HotbarSlots do
+		slotViews[index].Button.Parent = index <= visibleSlots and hotbar or grid
+	end
+
+	dotsButton.Visible = showButton
+
+	local count = visibleSlots + (showButton and 1 or 0)
+	hotbarWidth = count * CONFIG.SlotSize + (count - 1) * CONFIG.SlotGap
+	holder.Size = UDim2.fromOffset(hotbarWidth, CONFIG.SlotSize)
+	itemNameLabel.Size = UDim2.fromOffset(hotbarWidth, POPUP.TextSize + 4)
+
+	local rows = math.ceil((TOTAL_SLOTS - visibleSlots) / CONFIG.ExtraColumns)
+	local height = rows * CONFIG.SlotSize + (rows - 1) * CONFIG.SlotGap
+	grid.Size = UDim2.fromOffset(gridWidth, height)
+	window.Size = UDim2.fromOffset(
+		windowWidth,
+		CONFIG.WindowPadding * 2 + CONFIG.PreviewHeight + CONFIG.WindowGap + height
+	)
+
+	updateScale()
+end
+
 local function updateHudLayout(rows)
-	local heartsTop = CONFIG.HeartsMargin + CONFIG.HeartSize + (rows - 1) * heartStep
+	local heartsTop = CONFIG.HeartsMargin
+	if DEV.Hearts.Enabled then
+		heartsTop += CONFIG.HeartSize + (rows - 1) * heartStep
+	end
 	local stackTop = heartsTop
 	if shieldFrame.Visible then
 		shieldFrame.Position = UDim2.new(0, 0, 0, -(heartsTop + SHIELD.Gap))
@@ -2397,7 +2888,7 @@ end
 local function registerHealing(health)
 	local gain = health - lastHudHealth
 	lastHudHealth = health
-	if gain <= 0 or not currentHumanoid then
+	if not DEV.Hearts.HealingWave or gain <= 0 or not currentHumanoid then
 		return
 	end
 	local now = os.clock()
@@ -2429,13 +2920,13 @@ local function renderHearts()
 	end
 
 	visibleHearts = totalHearts
-	shaking = isLowHealth(currentHumanoid)
+	shaking = DEV.Hearts.LowHealthShake and isLowHealth(currentHumanoid)
 
 	return math.max(math.ceil(totalHearts / CONFIG.HeartsPerRow), 1)
 end
 
 local function renderShields()
-	local count = currentHumanoid and getShieldIcons(currentHumanoid) or 0
+	local count = (DEV.Hearts.ShieldBar and currentHumanoid) and getShieldIcons(currentHumanoid) or 0
 
 	for index = 1, count do
 		getHudShield(index).Visible = true
@@ -2492,7 +2983,7 @@ end
 
 local function getSlotAtPoint(point)
 	for index, view in slotViews do
-		if index <= CONFIG.HotbarSlots or window.Visible then
+		if view.Button.Parent == hotbar or window.Visible then
 			local position = view.Button.AbsolutePosition
 			local size = view.Button.AbsoluteSize
 			if
@@ -2575,6 +3066,9 @@ end
 
 local function bindSlotDrag(index, button)
 	button.InputBegan:Connect(function(input)
+		if not DEV.Hotbar.DragToSwap then
+			return
+		end
 		local inputType = input.UserInputType
 		if inputType ~= Enum.UserInputType.MouseButton1 and inputType ~= Enum.UserInputType.Touch then
 			return
@@ -2675,6 +3169,9 @@ local function watchContainer(container)
 end
 
 local function showItemName(name)
+	if not POPUP.Enabled then
+		return
+	end
 	itemNameToken += 1
 	local token = itemNameToken
 	if itemNameTween then
@@ -2721,6 +3218,8 @@ local function runRespawnCountdown()
 end
 
 local function setDeathScreen(visible)
+	deathScreenToken += 1
+	local token = deathScreenToken
 	if deathScreenTween then
 		deathScreenTween:Cancel()
 		deathScreenTween = nil
@@ -2736,6 +3235,13 @@ local function setDeathScreen(visible)
 			{ BackgroundTransparency = DEATH.ScreenTransparency }
 		)
 		deathScreenTween:Play()
+		if DEATH.HideScreenAfterNoRespawn then
+			task.delay(DEATH.HideScreenAfterSeconds, function()
+				if deathScreenToken == token then
+					setDeathScreen(false)
+				end
+			end)
+		end
 	elseif deathScreen.Visible then
 		respawnToken += 1
 		local tween = TweenService:Create(
@@ -2798,31 +3304,14 @@ do
 			return
 		end
 
-		local model = create("Model", { Name = "HeldModel", Parent = heldWorld })
-		local rootCFrame = root.CFrame
-
 		for _, descendant in tool:GetDescendants() do
 			if descendant:IsA("BasePart") then
 				table.insert(heldParts, descendant)
-				local copy = descendant:Clone()
-				if copy then
-					for _, child in copy:GetDescendants() do
-						if shouldStrip(child) then
-							child:Destroy()
-						end
-					end
-					copy.Anchored = true
-					copy.CanCollide = false
-					copy.CanQuery = false
-					copy.CanTouch = false
-					copy.CFrame = rootCFrame:ToObjectSpace(descendant.CFrame)
-					copy.Parent = model
-				end
 			end
 		end
 
-		if #model:GetChildren() == 0 then
-			model:Destroy()
+		local model = cloneToolModel(tool, root, heldWorld)
+		if not model then
 			return
 		end
 
@@ -2865,19 +3354,20 @@ do
 		local alive = humanoid ~= nil and root ~= nil and humanoid.Health > 0
 		local firstPerson = isFirstPerson()
 
-		crosshair.Visible = alive and firstPerson
+		crosshair.Visible = CROSSHAIR.Enabled and alive and (firstPerson or CROSSHAIR.ShowInThirdPerson)
 
-		local show = alive
-			and firstPerson
-			and heldModel ~= nil
-			and heldTool ~= nil
-			and heldTool.Parent == character
+		local equipped = heldTool ~= nil and heldTool.Parent == character
+		local allowed = HELD.Enabled and alive and equipped and (firstPerson or HELD.ShowInThirdPerson)
+		local handHolds = allowed and Systems.Hand.holdsItem()
+		local show = allowed and not handHolds and heldModel ~= nil
 
 		if heldViewport.Visible ~= show then
 			heldViewport.Visible = show
 		end
 
-		if show then
+		local hideWorld = HELD.HideWorldTool and firstPerson and (show or handHolds)
+
+		if hideWorld then
 			for _, part in heldParts do
 				if part.Parent then
 					part.LocalTransparencyModifier = 1
@@ -2975,7 +3465,9 @@ local function bindHumanoid(humanoid)
 		deaths += 1
 		deathsLabel.Text = "Deaths: " .. deaths
 		Systems.Held.Clear()
-		setDeathScreen(true)
+		if DEATH.Screen then
+			setDeathScreen(true)
+		end
 	end))
 	if character then
 		table.insert(healthConnections, character.ChildAdded:Connect(function(child)
@@ -3059,13 +3551,19 @@ local function watchDamage(character, humanoid)
 			table.insert(gains, { Time = now, Amount = delta })
 		elseif delta < 0 then
 			local recovered = 0
-			for _, gain in gains do
-				recovered += gain.Amount
+			if DEV.Damage.IgnoreWhileRecovering then
+				for _, gain in gains do
+					recovered += gain.Amount
+				end
 			end
 			if -delta > recovered then
-				playDamageSound(character)
-				showDamageHighlight(character)
-				if character == player.Character then
+				if DEV.Damage.Sound then
+					playDamageSound(character)
+				end
+				if DEV.Damage.Highlight then
+					showDamageHighlight(character)
+				end
+				if DEV.Damage.CameraTilt and character == player.Character then
 					hurtStart = now
 					hurtSign = math.random(0, 1) * 2 - 1
 				end
@@ -3085,7 +3583,9 @@ local function setupCharacter(targetPlayer, character)
 		return
 	end
 
-	humanoid.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
+	if DEV.Interface.HideDefaultOverheadHealth then
+		humanoid.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
+	end
 	watchDamage(character, humanoid)
 
 	Systems.Body.Live[character] = humanoid
@@ -3096,7 +3596,9 @@ local function setupCharacter(targetPlayer, character)
 	end)
 
 	humanoid.Died:Once(function()
-		task.spawn(Systems.Death.play, character)
+		if DEATH.Effect then
+			task.spawn(Systems.Death.play, character)
+		end
 	end)
 
 	character.ChildAdded:Connect(function(child)
@@ -3134,7 +3636,7 @@ local function setupCharacter(targetPlayer, character)
 				end
 			end)
 		end
-	else
+	elseif DEV.Overhead.Enabled then
 		Systems.Overhead.create(targetPlayer, character, humanoid)
 	end
 end
@@ -3150,6 +3652,13 @@ end
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	if gameProcessed then
+		return
+	end
+	if DEV.Inventory.KeyEnabled and input.KeyCode == DEV.Inventory.Key then
+		setWindowOpen(not window.Visible)
+		return
+	end
+	if not DEV.Hotbar.NumberKeys then
 		return
 	end
 	local index = KEY_SLOTS[input.KeyCode]
@@ -3183,8 +3692,8 @@ player.ChildAdded:Connect(function(child)
 end)
 
 screenGui:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateScale)
-UserInputService:GetPropertyChangedSignal("KeyboardEnabled"):Connect(updateScale)
-UserInputService:GetPropertyChangedSignal("TouchEnabled"):Connect(updateScale)
+UserInputService:GetPropertyChangedSignal("KeyboardEnabled"):Connect(applyHotbarLayout)
+UserInputService:GetPropertyChangedSignal("TouchEnabled"):Connect(applyHotbarLayout)
 RunService.RenderStepped:Connect(Systems.Overhead.update)
 RunService.RenderStepped:Connect(updateHeartAnimation)
 RunService.RenderStepped:Connect(updateTooltipPosition)
@@ -3192,6 +3701,7 @@ RunService.Heartbeat:Connect(Systems.Body.updatePoseSnapshots)
 RunService:BindToRenderStep("InventoryHurtTilt", Enum.RenderPriority.Camera.Value + 1, applyHurtTilt)
 RunService:BindToRenderStep("InventoryHeldItem", Enum.RenderPriority.Camera.Value + 2, Systems.Held.Update)
 RunService:BindToRenderStep("InventoryBlockBodies", Enum.RenderPriority.Camera.Value + 3, Systems.Body.updateBodies)
+RunService:BindToRenderStep("InventoryHands", Enum.RenderPriority.Camera.Value + 4, Systems.Hand.Update)
 
 Players.PlayerAdded:Connect(trackPlayer)
 
@@ -3200,7 +3710,7 @@ if existingBackpack then
 	watchContainer(existingBackpack)
 end
 
-updateScale()
+applyHotbarLayout()
 renderHud()
 scheduleSync()
 
