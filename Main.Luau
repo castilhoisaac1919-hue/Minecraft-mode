@@ -244,6 +244,10 @@ local STRIP_CLASSES = {
 	"Tool",
 }
 
+-- Beta Developer Options
+local BLOCK_BODIES_ENABLED = false
+-- Beta Developer Options
+
 local TOTAL_SLOTS = CONFIG.HotbarSlots + CONFIG.ExtraSlots
 
 local slotTools = {}
@@ -737,6 +741,10 @@ do
 			end
 		end
 
+		if not BLOCK_BODIES_ENABLED then
+			return
+		end
+
 		local humanoid = character:FindFirstChildOfClass("Humanoid")
 		local root = character:FindFirstChild("HumanoidRootPart")
 		if not humanoid or not root or not root:IsA("BasePart") then
@@ -894,6 +902,9 @@ do
 	end
 
 	local function updateBlockBodies()
+		if not BLOCK_BODIES_ENABLED then
+			return
+		end
 		local camera = Workspace.CurrentCamera
 		local cameraPosition = camera and camera.CFrame.Position or nil
 		local firstPerson = isFirstPerson()
