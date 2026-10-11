@@ -150,7 +150,8 @@ local HELD = {
 
 local DEATH = {
 	TipDuration = 0.45,
-	GroundWait = 0.75,
+	GroundWait = 1.35,
+	TipSide = 1,
 	Gravity = 196.2,
 	TipDegrees = 90,
 	PixelCount = 180,
@@ -250,7 +251,7 @@ local slotViews = {}
 local hearts = {}
 local heartBases = {}
 local hudShields = {}
-local watched = {}
+local watched = setmetatable({}, { __mode = "k" })
 local trackedTools = setmetatable({}, { __mode = "k" })
 local highlightTokens = setmetatable({}, { __mode = "k" })
 local healthConnections = {}
@@ -275,6 +276,7 @@ local itemNameTween = nil
 local deathScreenTween = nil
 local hoveredSlot = nil
 local respawnToken = 0
+local dragSuppressUntil = 0
 local Systems = {}
 
 local function checkAndRemoveTargetGui(instance)
@@ -615,6 +617,14 @@ do
 		end
 	end
 
+	local function releaseCharacter(character)
+		poseSnapshots[character] = nil
+		poseLists[character] = nil
+		livePoseCharacters[character] = nil
+		blockRefreshTokens[character] = nil
+		blockBodies[character] = nil
+	end
+
 	local function computeRestPose(character, root)
 		local rest = { [root] = CFrame.identity }
 		local joints = {}
@@ -715,6 +725,155 @@ do
 		table.insert(guis, gui)
 	end
 
+	local function buildBlockBody(character)
+		local previous = blockBodies[character]
+		blockBodies[character] = nil
+		if previous and previous.Model.Parent then
+			previous.Model:Destroy()
+		end
+		for _, child in character:GetChildren() do
+			if child.Name == BLOCKY.ModelName then
+				child:Destroy()
+			end
+		end
+
+		local humanoid = character:FindFirstChildOfClass("Humanoid")
+		local root = character:FindFirstChild("HumanoidRootPart")
+		if not humanoid or not root or not root:IsA("BasePart") then
+			return
+		end
+
+		local rest = computeRestPose(character, root)
+		local top = -math.huge
+		local bottom = math.huge
+		for _, child in character:GetChildren() do
+			local childRest = rest[child]
+			if child:IsA("BasePart") and child ~= root and childRest then
+				local size = child.Size
+				local halfHeight = (
+					math.abs(childRest.RightVector.Y) * size.X
+					+ math.abs(childRest.UpVector.Y) * size.Y
+					+ math.abs(childRest.LookVector.Y) * size.Z
+				) / 2
+				top = math.max(top, childRest.Position.Y + halfHeight)
+				bottom = math.min(bottom, childRest.Position.Y - halfHeight)
+			end
+		end
+		if top <= bottom then
+			return
+		end
+
+		local scale = math.max((top - bottom) / 32, 0.01)
+
+		local originals = {}
+		for _, descendant in character:GetDescendants() do
+			if
+				(descendant:IsA("BasePart") or descendant:IsA("Decal"))
+				and not descendant:FindFirstAncestorOfClass("Tool")
+			then
+				table.insert(originals, descendant)
+			end
+		end
+
+		local model = create("Model", { Name = BLOCKY.ModelName })
+		local blocks = {}
+		local followers = {}
+		local moveParts = {}
+		local moveFrames = {}
+
+		for _, definition in BLOCK_PARTS do
+			local source = findSource(character, definition.Sources)
+			if source then
+				local sourceRest = rest[source] or root.CFrame:ToObjectSpace(source.CFrame)
+				local blockRest = CFrame.new(
+					definition.Offset.X * scale,
+					bottom + (18 + definition.Offset.Y) * scale,
+					definition.Offset.Z * scale
+				)
+				local offset = sourceRest:ToObjectSpace(blockRest)
+				local part = create("Part", {
+					Name = definition.Name,
+					Size = definition.Size * scale,
+					Color = source.Color,
+					Material = Enum.Material.SmoothPlastic,
+					Anchored = true,
+					CanCollide = false,
+					CanQuery = false,
+					CanTouch = false,
+					Massless = true,
+					CastShadow = true,
+					CFrame = source.CFrame * offset,
+					Parent = model,
+				})
+				local block = {
+					Part = part,
+					Source = source,
+					Offset = offset,
+					Shown = true,
+					Forced = false,
+					Guis = {},
+				}
+				table.insert(blocks, block)
+				table.insert(followers, block)
+				table.insert(moveParts, part)
+				table.insert(moveFrames, part.CFrame)
+			end
+		end
+
+		if #blocks == 0 then
+			model:Destroy()
+			return
+		end
+
+		local anchor = create("Part", {
+			Name = "Root",
+			Size = root.Size,
+			Transparency = 1,
+			Anchored = true,
+			CanCollide = false,
+			CanQuery = false,
+			CanTouch = false,
+			Massless = true,
+			CastShadow = false,
+			CFrame = root.CFrame,
+			Parent = model,
+		})
+		table.insert(followers, { Part = anchor, Source = root, Offset = CFrame.identity })
+		table.insert(moveParts, anchor)
+		table.insert(moveFrames, anchor.CFrame)
+		model.PrimaryPart = anchor
+
+		local blockHumanoid = create("Humanoid", {
+			Name = "Humanoid",
+			RigType = humanoid.RigType,
+			DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None,
+			HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff,
+			NameDisplayDistance = 0,
+			HealthDisplayDistance = 0,
+			RequiresNeck = false,
+			BreakJointsOnDeath = false,
+			AutoRotate = false,
+			Parent = model,
+		})
+		pcall(function()
+			blockHumanoid.EvaluateStateMachine = false
+		end)
+		create("Animator", { Parent = blockHumanoid })
+
+		model.Parent = character
+
+		blockBodies[character] = {
+			Model = model,
+			Root = root,
+			Humanoid = blockHumanoid,
+			Originals = originals,
+			Blocks = blocks,
+			Followers = followers,
+			MoveParts = moveParts,
+			MoveFrames = moveFrames,
+		}
+	end
+
 	local function scheduleBlockRefresh(character)
 		local token = (blockRefreshTokens[character] or 0) + 1
 		blockRefreshTokens[character] = token
@@ -744,6 +903,14 @@ do
 				blockBodies[character] = nil
 				continue
 			end
+			for index, follower in body.Followers do
+				local frame = follower.Part.CFrame
+				if follower.Source.Parent then
+					frame = follower.Source.CFrame * follower.Offset
+				end
+				body.MoveFrames[index] = frame
+			end
+			Workspace:BulkMoveTo(body.MoveParts, body.MoveFrames, Enum.BulkMoveMode.FireCFrameChanged)
 			local hideBody = firstPerson and character == localCharacter
 			for _, original in body.Originals do
 				if original.Parent and original.LocalTransparencyModifier ~= 1 then
@@ -756,6 +923,10 @@ do
 				local sourceTransparency = block.Source.Transparency
 				if part.Transparency ~= sourceTransparency then
 					part.Transparency = sourceTransparency
+				end
+				local sourceColor = block.Source.Color
+				if part.Color ~= sourceColor then
+					part.Color = sourceColor
 				end
 				if hideBody then
 					part.LocalTransparencyModifier = 1
@@ -782,6 +953,8 @@ do
 		capturePose = capturePose,
 		isRelevant = isBodyRelevant,
 		scheduleRefresh = scheduleBlockRefresh,
+		build = buildBlockBody,
+		release = releaseCharacter,
 		updatePoseSnapshots = updatePoseSnapshots,
 		updateBodies = updateBlockBodies,
 	}
@@ -1281,7 +1454,7 @@ do
 		corpse.Parent = Workspace
 
 		local boxCFrame, boxSize = corpse:GetBoundingBox()
-		local pivot = boxCFrame:PointToWorldSpace(Vector3.new(-boxSize.X / 2, -boxSize.Y / 2, 0))
+		local pivot = boxCFrame:PointToWorldSpace(Vector3.new(boxSize.X / 2 * DEATH.TipSide, -boxSize.Y / 2, 0))
 		local axis = boxCFrame.ZVector
 		local ground = findGroundHeight(pivot, { character, corpse })
 		local gap = math.max(pivot.Y - ground, 0)
@@ -1295,7 +1468,7 @@ do
 			local deltaTime = RunService.Heartbeat:Wait()
 			elapsed += deltaTime
 			local progress = math.clamp(elapsed / DEATH.TipDuration, 0, 1)
-			local angle = maxAngle * progress * progress
+			local angle = -DEATH.TipSide * maxAngle * progress * progress
 			if dropped < gap then
 				fallSpeed += DEATH.Gravity * deltaTime
 				dropped = math.min(dropped + fallSpeed * deltaTime, gap)
@@ -1914,6 +2087,9 @@ local function createSlotView(index, parent, zIndex, fillTransparency)
 	})
 
 	button.Activated:Connect(function()
+		if (press and press.Active) or os.clock() < dragSuppressUntil then
+			return
+		end
 		toggleTool(slotTools[index])
 	end)
 
@@ -2332,6 +2508,7 @@ local function endDrag()
 	if not current or not current.Active then
 		return
 	end
+	dragSuppressUntil = os.clock() + 0.2
 	local target = getSlotAtPoint(getPointer(current.Input))
 	current.Ghost:Destroy()
 	if target and target ~= current.Index then
@@ -2573,17 +2750,19 @@ do
 			if descendant:IsA("BasePart") then
 				table.insert(heldParts, descendant)
 				local copy = descendant:Clone()
-				for _, child in copy:GetDescendants() do
-					if shouldStrip(child) then
-						child:Destroy()
+				if copy then
+					for _, child in copy:GetDescendants() do
+						if shouldStrip(child) then
+							child:Destroy()
+						end
 					end
+					copy.Anchored = true
+					copy.CanCollide = false
+					copy.CanQuery = false
+					copy.CanTouch = false
+					copy.CFrame = rootCFrame:ToObjectSpace(descendant.CFrame)
+					copy.Parent = model
 				end
-				copy.Anchored = true
-				copy.CanCollide = false
-				copy.CanQuery = false
-				copy.CanTouch = false
-				copy.CFrame = rootCFrame:ToObjectSpace(descendant.CFrame)
-				copy.Parent = model
 			end
 		end
 
@@ -2857,23 +3036,36 @@ local function setupCharacter(targetPlayer, character)
 	Systems.Body.Live[character] = humanoid
 	Systems.Body.capturePose(character)
 
+	character.Destroying:Once(function()
+		Systems.Body.release(character)
+	end)
+
 	humanoid.Died:Once(function()
 		task.spawn(Systems.Death.play, character)
 	end)
 
-	if targetPlayer == player then
-		character.ChildAdded:Connect(function(child)
-			if Systems.Body.isRelevant(child) then
-				Systems.Body.scheduleRefresh(character)
-			end
-		end)
-		character.ChildRemoved:Connect(function(child)
-			if Systems.Body.isRelevant(child) then
-				Systems.Body.scheduleRefresh(character)
-			end
-		end)
-		Systems.Body.scheduleRefresh(character)
+	character.ChildAdded:Connect(function(child)
+		if Systems.Body.isRelevant(child) then
+			Systems.Body.scheduleRefresh(character)
+		end
+	end)
+	character.ChildRemoved:Connect(function(child)
+		if Systems.Body.isRelevant(child) then
+			Systems.Body.scheduleRefresh(character)
+		end
+	end)
+	character.DescendantAdded:Connect(function(descendant)
+		if
+			descendant:IsA("Decal")
+			and not descendant:FindFirstAncestor(Systems.Body.ModelName)
+			and not descendant:FindFirstAncestorOfClass("Tool")
+		then
+			Systems.Body.scheduleRefresh(character)
+		end
+	end)
+	Systems.Body.scheduleRefresh(character)
 
+	if targetPlayer == player then
 		watchContainer(character)
 		bindHumanoid(humanoid)
 		scheduleSync()
